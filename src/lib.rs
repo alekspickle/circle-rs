@@ -1,11 +1,30 @@
-/// this is slightly changed version of rustbar crate, which is simple and minimalistic,
-/// but i needed another infinite bar animation, hence this crate.
+//! This is slightly changed version of [rustbar](https://crates.io/crates/rustbar) crate, which is simple and minimalistic,
+//! but i needed another infinite bar animation, hence this crate.
+//! 
+//! The goal also was to be able to use it as simple as possible.
+//! 
+//! ```rust,no_run
+//! #use std::{io::Result, thread, time::Duration};
+//! 
+//! #use wait_lib::{Infinite, Progress};
+//! pub fn main() -> Result<()> {
+//!     println!("\nGoing to poll some stuff.");
+//!     let mut infbar = Infinite::new().to_stderr();
+//!     infbar.set_msg("Polling");
+//!     infbar.start()?;
+//!     thread::sleep(Duration::from_secs(2));
+//!     infbar.stop()?;
+//!     Ok(())
+//! }
+//! ```
+//!
 use std::{
     io::{stderr, stdout, Result, Write},
     thread,
     time::Duration,
 };
 
+/// loader pattern
 const PATTERN: &str = "⠁⠁⠂⠂⠄⠄⡀⡀⡀⠠⠠⠐⠐⠈";
 
 fn clear_stdout() -> Result<()> {
@@ -27,16 +46,17 @@ fn write_to_stderr(buf: String) -> Result<()> {
     Ok(())
 }
 
-///all progressbars will implement it
-pub trait ProgressBar<T> {
+/// Main trait
+pub trait Progress<T> {
     fn new() -> T;
     fn to_stderr(&mut self) -> T;
     fn write(&self, buf: String) -> Result<()>;
     fn clear(&self) -> Result<()>;
 }
 
+/// Struct for storing state
 #[derive(Clone)]
-pub struct InfiniteProgressBar {
+pub struct Infinite {
     msg: String,
     marker_position: u8,
     step: u8,
@@ -45,9 +65,9 @@ pub struct InfiniteProgressBar {
     rolling: bool,
 }
 
-impl Default for InfiniteProgressBar {
-    fn default() -> InfiniteProgressBar {
-        InfiniteProgressBar {
+impl Default for Infinite {
+    fn default() -> Infinite {
+        Infinite {
             step: 1,
             msg: "".to_owned(),
             marker_position: 0,
@@ -58,14 +78,14 @@ impl Default for InfiniteProgressBar {
     }
 }
 
-impl ProgressBar<InfiniteProgressBar> for InfiniteProgressBar {
-    fn new() -> InfiniteProgressBar {
-        InfiniteProgressBar {
+impl Progress<Infinite> for Infinite {
+    fn new() -> Infinite {
+        Infinite {
             ..Default::default()
         }
     }
 
-    fn to_stderr(&mut self) -> InfiniteProgressBar {
+    fn to_stderr(&mut self) -> Infinite {
         self.write_fn = write_to_stderr;
         self.clone()
     }
@@ -80,7 +100,7 @@ impl ProgressBar<InfiniteProgressBar> for InfiniteProgressBar {
     }
 }
 
-impl InfiniteProgressBar {
+impl Infinite {
     pub fn set_msg(&mut self, msg: &str) {
         self.msg = msg.to_owned()
     }

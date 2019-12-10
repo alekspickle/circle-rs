@@ -1,20 +1,20 @@
 [package]
-name = "circle-wait"
+name = "circle-rs"
 version = "0.1.0"
 authors = ["Aleks Gnatovskyi <aleks.work2222@gmail.com>"]
 edition = "2018"
 
-description = "Minimalistic modern infinite terminal progress circle."
-keywords = ["progressbar", "terminal", "circle"]
+description = "Minimalistic modern infinite terminal progress indicator."
+keywords = ["progressbar", "terminal", "circle", "simple"]
 license = "MIT"
-repository = "https://github.com/alekspickle/circle-wait"
-homepage = "https://github.com/alekspickle/circle-wait"
+repository = "https://github.com/alekspickle/circle-rs"
+homepage = "https://github.com/alekspickle/circle-rs"
 
 
 [lib]
-name="wait_lib"
+name="circle_rs"
 path="src/lib.rs"
 
 [[bin]]
-name="circle_wait"
+name="circle_example"
 path="src/main.rs"
