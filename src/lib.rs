@@ -9,9 +9,7 @@ use std::{
 const PATTERN: &str = "⠁⠁⠂⠂⠄⠄⡀⡀⡀⠠⠠⠐⠐⠈";
 
 fn clear_stdout() -> Result<()> {
-    let mut output = stdout();
-    output.write(b"")?;
-    output.flush()?;
+    stdout().flush()?;
     Ok(())
 }
 
@@ -92,19 +90,24 @@ impl InfiniteProgressBar {
 
     pub fn stop(&mut self) -> Result<()> {
         self.rolling = false;
-        self.clear()
+        println!();
+        Ok(())
     }
-    pub fn start(&mut self) {
+    pub fn start(&mut self) -> Result<String> {
         self.rolling = true;
-        while self.rolling {
-            self.render().unwrap();
-            thread::sleep(Duration::from_millis(100));
-        }
+        let mut bar = self.clone();
+        let thread_name = "rolling";
+        thread::Builder::new()
+            .name(thread_name.clone().into())
+            .spawn(move || loop {
+                bar.render().unwrap();
+                thread::sleep(Duration::from_millis(100));
+            })?;
+
+        Ok(thread_name.into())
     }
 
     pub fn render(&mut self) -> Result<()> {
-        // let (screen_w, screen_h) = term_utils::get_winsize().unwrap();
-
         if self.marker_position == 0 {
             self.marker_position = 0;
             self.step = 1;
