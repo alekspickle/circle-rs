@@ -1,8 +1,19 @@
 /// this is slightly changed version of rustbar crate, which is simple and minimalistic,
 /// but i needed another infinite bar animation, hence this crate.
-use std::io::{stderr, stdout, Result, Write};
+use std::{
+    io::{stderr, stdout, Result, Write},
+    thread,
+    time::Duration,
+};
 
-const PATTERN: &str =  "⠁⠂⠄⡀⢀⠠⠐⠈ ";
+const PATTERN: &str = "⠁⠁⠂⠂⠄⠄⡀⡀⡀⠠⠠⠐⠐⠈";
+
+fn clear_stdout() -> Result<()> {
+    let mut output = stdout();
+    output.write(b"")?;
+    output.flush()?;
+    Ok(())
+}
 
 fn write_to_stdout(buf: String) -> Result<()> {
     let mut output = stdout();
@@ -23,14 +34,17 @@ pub trait ProgressBar<T> {
     fn new() -> T;
     fn to_stderr(&mut self) -> T;
     fn write(&self, buf: String) -> Result<()>;
+    fn clear(&self) -> Result<()>;
 }
 
 #[derive(Clone)]
 pub struct InfiniteProgressBar {
     msg: String,
-    marker_position: i8,
-    step: i8,
+    marker_position: u8,
+    step: u8,
     write_fn: fn(String) -> Result<()>,
+    clear_fn: fn() -> Result<()>,
+    rolling: bool,
 }
 
 impl Default for InfiniteProgressBar {
@@ -40,6 +54,8 @@ impl Default for InfiniteProgressBar {
             msg: "".to_owned(),
             marker_position: 0,
             write_fn: write_to_stdout,
+            clear_fn: clear_stdout,
+            rolling: false,
         }
     }
 }
@@ -60,6 +76,10 @@ impl ProgressBar<InfiniteProgressBar> for InfiniteProgressBar {
         (self.write_fn)(buf)?;
         Ok(())
     }
+    fn clear(&self) -> Result<()> {
+        (self.clear_fn)()?;
+        Ok(())
+    }
 }
 
 impl InfiniteProgressBar {
@@ -70,22 +90,40 @@ impl InfiniteProgressBar {
         self.msg.as_ref()
     }
 
+    pub fn stop(&mut self) -> Result<()> {
+        self.rolling = false;
+        self.clear()
+    }
+    pub fn start(&mut self) {
+        self.rolling = true;
+        while self.rolling {
+            self.render().unwrap();
+            thread::sleep(Duration::from_millis(100));
+        }
+    }
+
     pub fn render(&mut self) -> Result<()> {
         // let (screen_w, screen_h) = term_utils::get_winsize().unwrap();
 
-        if self.marker_position <= 0 {
+        if self.marker_position == 0 {
             self.marker_position = 0;
             self.step = 1;
-        } else if self.marker_position > 9 {
-            self.marker_position = 10;
-            self.step = -1;
+        } else if self.marker_position == 12 {
+            self.marker_position = 0;
+            self.step = 1;
         }
         self.marker_position = self.marker_position + self.step;
 
-        let mut bar: String = "..........".to_owned(); //10 dots
-        bar.insert(self.marker_position as usize, '#');
+        let bar = PATTERN
+            .chars()
+            .nth(usize::from(self.marker_position))
+            .expect("out of bounds");
 
-        self.write(format!("\r{msg} [{bar}]", msg = self.msg, bar = bar))?;
+        self.write(format!(
+            "\r{msg} {bar}{bar}{bar} ",
+            msg = self.msg,
+            bar = bar
+        ))?;
         Ok(())
     }
 }
