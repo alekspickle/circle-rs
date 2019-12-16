@@ -1,4 +1,4 @@
-[![version](https://img.shields.io/badge/version-0.2.0-violet)](https:://github.com/alekspickle)
+[![version](https://img.shields.io/crates/v/circle-rs-violet)](https:://github.com/alekspickle)
 
 # Minimalistic modern infinite terminal progress indicator.
 
