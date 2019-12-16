@@ -1,13 +1,15 @@
-use std::{io::Result, thread, time::Duration};
+use std::{io::Result, thread, time::{Duration, Instant}};
 use circle_rs::{Infinite, Progress};
 
 pub fn main() -> Result<()> {
     println!("\nGoing to poll some stuff.");
-    let mut infbar = Infinite::new().to_stderr();
-    infbar.set_msg("Polling");
-    infbar.start()?;
+    let mut loader = Infinite::new().to_stderr();
+    loader.set_msg("Polling");
+    loader.start()?;
+    let now = Instant::now();
     thread::sleep(Duration::from_secs(2));
-    infbar.stop()?;
+    println!("elapsed {:?}", now.elapsed());
+    loader.stop()?;
 
     Ok(())
 }

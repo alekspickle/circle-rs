@@ -9,11 +9,11 @@
 //! #use wait_lib::{Infinite, Progress};
 //! pub fn main() -> Result<()> {
 //!     println!("\nGoing to poll some stuff.");
-//!     let mut infbar = Infinite::new().to_stderr();
-//!     infbar.set_msg("Polling");
-//!     infbar.start()?;
+//!     let mut loader = Infinite::new().to_stderr();
+//!     loader.set_msg("Polling");
+//!     loader.start()?;
 //!     thread::sleep(Duration::from_secs(2));
-//!     infbar.stop()?;
+//!     loader.stop()?;
 //!     Ok(())
 //! }
 //! ```
@@ -110,7 +110,7 @@ impl Infinite {
 
     pub fn stop(&mut self) -> Result<()> {
         self.rolling = false;
-        println!();
+        self.clear()?;
         Ok(())
     }
     pub fn start(&mut self) -> Result<String> {
