@@ -1,14 +1,19 @@
-# Minimalistic modern infinite terminal progress indicator.
+# circle-rs
 
-This is based on [rustbar](https://crates.io/crates/rustbar) crate, which is simple and minimalistic,
+[![version](https://img.shields.io/crates/v/circle-rs)](https:://github.com/alekspickle)
+
+## Minimalistic modern infinite terminal progress indicator
+
+This is slightly changed version of [rustbar](https://crates.io/crates/rustbar) crate, which is simple and minimalistic,
 but i needed another infinite bar animation, hence this crate.
 
-### The goal also was to be able to use it as simple as:
+#### The goal also was to be able to use it as simple as:
 
+## Example
 ```rust
-use std::{io::Result, thread, time::Duration};
-use circle_rs::{Infinite, Progress};
+#use std::{io::Result, thread, time::Duration};
 
+#use wait_lib::{Infinite, Progress};
 pub fn main() -> Result<()> {
     println!("\nGoing to poll some stuff.");
     let mut loader = Infinite::new().to_stderr();
@@ -16,8 +21,9 @@ pub fn main() -> Result<()> {
     loader.start()?;
     thread::sleep(Duration::from_secs(2));
     loader.stop()?;
-
     Ok(())
 }
-
 ```
+
+
+License: MIT

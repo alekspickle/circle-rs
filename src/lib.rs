@@ -1,8 +1,13 @@
+//! [![version](https://img.shields.io/crates/v/circle-rs)](https:://github.com/alekspickle)
+//! 
+//! # Minimalistic modern infinite terminal progress indicator
+//! 
 //! This is slightly changed version of [rustbar](https://crates.io/crates/rustbar) crate, which is simple and minimalistic,
 //! but i needed another infinite bar animation, hence this crate.
 //! 
-//! The goal also was to be able to use it as simple as possible.
+//! ### The goal also was to be able to use it as simple as:
 //! 
+//! # Example 
 //! ```rust,no_run
 //! #use std::{io::Result, thread, time::Duration};
 //! 
