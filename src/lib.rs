@@ -22,7 +22,10 @@
 //!     Ok(())
 //! }
 //! ```
-//!
+//! 
+//! 
+//! License: MIT
+//! 
 use std::{
     io::{stderr, stdout, Result, Write},
     thread,
@@ -65,7 +68,7 @@ pub struct Infinite {
     msg: String,
     marker_position: u8,
     step: u8,
-    duration: Duration,
+    delay: Duration,
     write_fn: fn(String) -> Result<()>,
     clear_fn: fn() -> Result<()>,
     rolling: bool,
@@ -75,7 +78,7 @@ impl Default for Infinite {
     fn default() -> Infinite {
         Infinite {
             step: 1,
-            duration: Duration::from_millis(100),
+            delay: Duration::from_millis(100),
             msg: "".to_owned(),
             marker_position: 0,
             write_fn: write_to_stdout,
@@ -111,34 +114,41 @@ impl Infinite {
     pub fn set_msg(&mut self, msg: &str) {
         self.msg = msg.to_owned()
     }
-    pub fn set_duration(&mut self, d: Duration) {
-        self.duration = d
+    pub fn set_delay(&mut self, d: Duration) {
+        self.delay = d
     }
 
     pub fn get_msg(&self) -> &str {
         self.msg.as_ref()
     }
+    pub fn get_delay(&self) -> Duration {
+        self.delay
+    }
 
     pub fn stop(&mut self) -> Result<()> {
         self.rolling = false;
         self.clear()?;
+        self.render_end()?;
         Ok(())
     }
-    pub fn start(&mut self) -> Result<String> {
+    pub fn start<'a>(&'a mut self) -> Result<String> {
         self.rolling = true;
         let mut bar = self.clone();
+        let sleep = self.delay;
         let thread_name = "rolling";
         thread::Builder::new()
-            .name(thread_name.clone().into())
-            .spawn(move || loop {
-                bar.render().unwrap();
-                thread::sleep(Duration::from_millis(100));
-                // thread::sleep(self.duration);
+        .name(thread_name.clone().into())
+        .spawn(move || loop {
+            bar.render().unwrap();
+                thread::sleep(sleep);
             })?;
-
+        
         Ok(thread_name.into())
     }
 
+    pub fn render_end(&mut self) -> Result<()> {
+         self.write("\r".into())
+    }
     pub fn render(&mut self) -> Result<()> {
         if self.marker_position == 0 {
             self.marker_position = 0;
