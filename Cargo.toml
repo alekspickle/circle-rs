@@ -1,6 +1,6 @@
 [package]
 name = "circle-rs"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["Aleks Gnatovskyi <aleks.work2222@gmail.com>"]
 edition = "2018"
 
