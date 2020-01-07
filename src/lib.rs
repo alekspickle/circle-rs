@@ -65,6 +65,7 @@ pub struct Infinite {
     msg: String,
     marker_position: u8,
     step: u8,
+    duration: Duration,
     write_fn: fn(String) -> Result<()>,
     clear_fn: fn() -> Result<()>,
     rolling: bool,
@@ -74,6 +75,7 @@ impl Default for Infinite {
     fn default() -> Infinite {
         Infinite {
             step: 1,
+            duration: Duration::from_millis(100),
             msg: "".to_owned(),
             marker_position: 0,
             write_fn: write_to_stdout,
@@ -109,6 +111,10 @@ impl Infinite {
     pub fn set_msg(&mut self, msg: &str) {
         self.msg = msg.to_owned()
     }
+    pub fn set_duration(&mut self, d: Duration) {
+        self.duration = d
+    }
+
     pub fn get_msg(&self) -> &str {
         self.msg.as_ref()
     }
@@ -127,6 +133,7 @@ impl Infinite {
             .spawn(move || loop {
                 bar.render().unwrap();
                 thread::sleep(Duration::from_millis(100));
+                // thread::sleep(self.duration);
             })?;
 
         Ok(thread_name.into())
@@ -155,3 +162,4 @@ impl Infinite {
         Ok(())
     }
 }
+
