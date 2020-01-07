@@ -22,9 +22,9 @@
 //!     Ok(())
 //! }
 //! ```
-//! 
-//! 
-//! License: MIT
+//! # Features:
+//! 1. set custom loading message
+//! 2. set loader speed without reconstructing it
 //! 
 use std::{
     io::{stderr, stdout, Result, Write},
