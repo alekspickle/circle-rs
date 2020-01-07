@@ -6,15 +6,6 @@ edition = "2018"
 
 description = "Minimalistic modern infinite terminal progress indicator."
 keywords = ["progressbar", "terminal", "circle", "simple"]
-license = "MIT"
+license = "MIT OR Apache-2.0"
 repository = "https://github.com/alekspickle/circle-rs"
 homepage = "https://github.com/alekspickle/circle-rs"
-
-
-[lib]
-name="circle_rs"
-path="src/lib.rs"
-
-[[bin]]
-name="circle_example"
-path="src/main.rs"
