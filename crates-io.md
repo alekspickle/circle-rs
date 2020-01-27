@@ -11,16 +11,18 @@ but i needed another infinite bar animation, hence this crate.
 
 ## Example
 ```rust
-#use std::{io::Result, thread, time::Duration};
+use std::{io::Result, thread, time::{Duration, Instant}};
+use circle_rs::{Infinite, Progress};
 
-#use wait_lib::{Infinite, Progress};
 pub fn main() -> Result<()> {
-    println!("\nGoing to poll some stuff.");
+    println!("\n100 ms delay");
     let mut loader = Infinite::new().to_stderr();
     loader.set_msg("Polling");
-    loader.start()?;
+    let start_thread = loader.start()?;
+    let now = Instant::now();
     thread::sleep(Duration::from_secs(2));
     loader.stop()?;
+    println!("elapsed {} {:?}",start_thread, now.elapsed());
     Ok(())
 }
 ```
@@ -29,4 +31,4 @@ pub fn main() -> Result<()> {
 2. set loader speed without reconstructing it
 
 
-License: MIT
+License: MIT OR Apache-2.0

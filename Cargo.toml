@@ -4,7 +4,7 @@ version = "0.3.1"
 authors = ["Aleks Gnatovskyi <aleks.work2222@gmail.com>"]
 edition = "2018"
 
-description = "Minimalistic modern infinite terminal progress indicator."
+description = "Minimalistic modern infinite progress indicator."
 keywords = ["progressbar", "terminal", "circle", "simple"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/alekspickle/circle-rs"
