@@ -29,6 +29,15 @@ pub fn main() -> Result<()> {
 ## Features:
 1. set custom loading message
 2. set loader speed without reconstructing it
+3. add cute greeny "done" message after loader is done
+
+### Note:
+ In (3) case you'll need to enable feature, because it requires termion to be added.
+ Because you **dont pay for what you dont want**, right?
+```toml
+[dependencies]
+circle-rs = {version = "*", features = ["end"]}
+```
 
 
 License: MIT OR Apache-2.0
