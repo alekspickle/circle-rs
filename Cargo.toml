@@ -9,3 +9,12 @@ keywords = ["progressbar", "terminal", "circle", "simple"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/alekspickle/circle-rs"
 homepage = "https://github.com/alekspickle/circle-rs"
+
+
+[dependencies]
+termion={version = "1.5.3", optional = true}
+
+[features]
+end = ["termion"]
+
+default = []
