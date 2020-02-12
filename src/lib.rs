@@ -1,17 +1,17 @@
 //! [![version](https://img.shields.io/crates/v/circle-rs)](https:://github.com/alekspickle)
-//! 
+//!
 //! # Minimalistic modern infinite terminal progress indicator
-//! 
+//!
 //! This is slightly changed version of [rustbar](https://crates.io/crates/rustbar) crate, which is simple and minimalistic,
 //! but i needed another infinite bar animation, hence this crate.
-//! 
+//!
 //! ### The goal also was to be able to use it as simple as:
-//! 
-//! # Example 
+//!
+//! # Example
 //! ```rust,no_run
 //! use std::{io::Result, thread, time::{Duration, Instant}};
 //! use circle_rs::{Infinite, Progress};
-//! 
+//!
 //! pub fn main() -> Result<()> {
 //!     println!("\n100 ms delay");
 //!     let mut loader = Infinite::new().to_stderr();
@@ -27,12 +27,15 @@
 //! # Features:
 //! 1. set custom loading message
 //! 2. set loader speed without reconstructing it
-//! 
+//!
 use std::{
     io::{stderr, stdout, Result, Write},
     thread,
     time::Duration,
 };
+
+#[cfg(feature = "end")]
+mod utils;
 
 /// loader pattern
 const PATTERN: &str = "⠁⠁⠂⠂⠄⠄⡀⡀⡀⠠⠠⠐⠐⠈";
@@ -61,6 +64,8 @@ pub trait Progress<T> {
     fn new() -> T;
     fn to_stderr(&mut self) -> T;
     fn write(&self, buf: String) -> Result<()>;
+    #[cfg(feature = "end")]
+    fn write_done(&self) -> Result<()>;
     fn clear(&self) -> Result<()>;
 }
 
@@ -74,6 +79,7 @@ pub struct Infinite {
     write_fn: fn(String) -> Result<()>,
     clear_fn: fn() -> Result<()>,
     rolling: bool,
+    done: bool,
 }
 
 impl Default for Infinite {
@@ -86,6 +92,7 @@ impl Default for Infinite {
             write_fn: write_to_stdout,
             clear_fn: clear_stdout,
             rolling: false,
+            done: false,
         }
     }
 }
@@ -103,8 +110,12 @@ impl Progress<Infinite> for Infinite {
     }
 
     fn write(&self, buf: String) -> Result<()> {
-        (self.write_fn)(buf)?;
-        Ok(())
+        (self.write_fn)(buf)
+    }
+    #[cfg(feature = "end")]
+    fn write_done(&self) -> Result<()> {
+        let buf = utils::print_green("done\n");
+        (self.write_fn)(buf)
     }
     fn clear(&self) -> Result<()> {
         (self.clear_fn)()?;
@@ -118,6 +129,9 @@ impl Infinite {
     }
     pub fn set_delay(&mut self, d: Duration) {
         self.delay = d
+    }
+    pub fn set_done(&mut self, done: bool) {
+        self.done = done
     }
 
     pub fn get_msg(&self) -> &str {
@@ -139,17 +153,25 @@ impl Infinite {
         let sleep = self.delay;
         let thread_name = "rolling";
         thread::Builder::new()
-        .name(thread_name.clone().into())
-        .spawn(move || loop {
-            bar.render().unwrap();
+            .name(thread_name.clone().into())
+            .spawn(move || loop {
+                bar.render().unwrap();
                 thread::sleep(sleep);
             })?;
-        
         Ok(thread_name.into())
     }
 
+    #[cfg(feature = "end")]
     pub fn render_end(&mut self) -> Result<()> {
-         self.write("\r".into())
+        if self.done {
+            self.write_done()
+        } else {
+            self.write("\r".into())
+        }
+    }
+    #[cfg(not(feature = "end"))]
+    pub fn render_end(&mut self) -> Result<()> {
+        self.write("\r".into())
     }
     pub fn render(&mut self) -> Result<()> {
         if self.marker_position == 0 {
@@ -174,4 +196,3 @@ impl Infinite {
         Ok(())
     }
 }
-
